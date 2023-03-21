@@ -1,6 +1,8 @@
 package ru.yole.jkid.serialization
 
 import org.junit.Test
+import ru.yole.jkid.JsonExclude
+import ru.yole.jkid.JsonName
 import ru.yole.jkid.deserialization.*
 import kotlin.test.assertEquals
 
@@ -54,4 +56,27 @@ class SerializerTest {
         val result = serialize(TwoPropsOneExcluded("foo", "bar"))
         assertEquals("""{"s": "foo"}""", result)
     }
+
+    @Test fun testStudent() {
+        val result = serialize(Student(1, "hello", listOf("Math", "Computer")))
+        assertEquals("""{"major": ["Math", "Computer"], "name": "hello", "studentId": 1}""", result)
+    }
+
+    @Test fun testStudentVer2() {
+        val result = serialize(StudentVer2(1, "hello", listOf("Math", "Computer"), false))
+        assertEquals("""{"major": ["Math", "Computer"], "name": "hello", "student identifier": 1}""", result)
+    }
 }
+
+data class Student(
+    val studentId: Long,
+    val name: String,
+    val major: List<String>
+)
+
+data class StudentVer2(
+    @JsonName(name = "student identifier") val studentId: Long,
+    val name: String,
+    val major: List<String>,
+    @JsonExclude val isRegister: Boolean
+)
