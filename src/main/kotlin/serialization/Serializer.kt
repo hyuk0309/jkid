@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package ru.yole.jkid.serialization
 
 import ru.yole.jkid.*
@@ -56,6 +58,7 @@ private fun StringBuilder.serializePropertyValue(value: Any?) {
         is String -> serializeString(value)
         is Number, is Boolean -> append(value.toString())
         is List<*> -> serializeList(value)
+        is Map<*, *> -> serializeMap(value as Map<Any, Any?>)
         else -> serializeObject(value)
     }
 }
@@ -63,6 +66,14 @@ private fun StringBuilder.serializePropertyValue(value: Any?) {
 private fun StringBuilder.serializeList(data: List<Any?>) {
     data.joinToStringBuilder(this, prefix = "[", postfix = "]") {
         serializePropertyValue(it)
+    }
+}
+
+private fun StringBuilder.serializeMap(data: Map<Any, Any?>) {
+    data.entries.joinToStringBuilder(this, prefix = "{", postfix = "}") {
+        serializePropertyValue(it.key)
+        append(": ")
+        serializePropertyValue(it.value)
     }
 }
 
